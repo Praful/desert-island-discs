@@ -48,3 +48,7 @@ There is also a script that will list out several episodes that have different c
 ```
 > python ./list_selective_episodes.py
 ```
+
+## Output
+
+The complete output of all episodes (at the time of running) are in the output directory. CSV and Excel output files are provided.
