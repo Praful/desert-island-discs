@@ -1,5 +1,9 @@
 # webscraper readme
-Scrape all episode data from the BBC Desert Island Discs website
+This program scrapes all episode data from the BBC Desert Island Discs website. For each episode, it attempts to get the name of the castaway, the music played, the book chosen, the luxury chosen and the favourite track chosen.
+
+At the time of posting (Feb 2020), over 3,000 episodes were extracted and are in the output directory.
+
+For more information about how I wrote the program, see my blog post: [Desert Island Discs: all the records, books, and luxuries](https://prafulkapadia.com/2020/02/04/desert-island-discs-all-the-records-books-and-luxuries/).
 
 ## Installation
 
