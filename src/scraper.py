@@ -548,7 +548,10 @@ class DesertIslandDiscsParser:
             try:
                 castaway = self.parse_castaway_in_listing(castaway_element)
                 if castaway is not None:
-                    self.all_castaways[castaway.name] = castaway
+                    # Using name as key doesn't allow for castaways who appear more 
+                    # than once; use object as key since we don't ever use the key
+                    #  self.all_castaways[castaway.name] = castaway
+                    self.all_castaways[castaway] = castaway
             except Exception as e:
                 print_error(f'ERROR processing castaway: {castaway_element}', e)
 
