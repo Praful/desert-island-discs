@@ -5,7 +5,7 @@ At the time of posting (Feb 2020), over 3,000 episodes were extracted and are in
 
 For more information about how I wrote the program, see my blog post: [Desert Island Discs: all the records, books, and luxuries](https://prafulkapadia.com/2020/02/04/desert-island-discs-all-the-records-books-and-luxuries/).
 
-*Edit: The output was updated 27 Sept 2022.*
+*Edit: The output was last updated 26 Oct 2022 and now includes the first broadcast date and time of each episode.*
 
 ## Installation
 
