@@ -175,7 +175,7 @@ class TestEpisode(unittest.TestCase):
         episode = self.process_episode_url(TEST_EPISODE_URL_9)
 
         self.assertEqual(len(episode.tracks), MAX_TRACKS)
-        self.assertEqual(episode.luxury, 'A really big drum kit\n' +
+        self.assertEqual(episode.luxury, 'A really big drum kit / ' +
                          'A collection of Château d\'Yquem of his choice from 1900-2001, a fridge, Sauternes glasses')
 
     def test_favourite_track_denoted_by_favourite_track_in_description(self):

@@ -424,7 +424,7 @@ class DesertIslandDiscsParser:
 
     def extract_broadcast_datetime(self, soup):
         """
-        Extract broadcast date and time
+        Extract earliest broadcast date and time.
         """
         date = ''
         time = ''
@@ -435,19 +435,17 @@ class DesertIslandDiscsParser:
                     d['content']) for d in isodates]
                 if len(dates) > 0:
                     dates.sort()
-                    # print(dates[0].isoformat())
                     date = dates[0].strftime('%Y-%m-%d')
                     time = dates[0].strftime('%H:%M')
-                    # print(date, '  ', time)
-                else:  # next try "Last on" date/time
-                    if (date := soup.find('time')) is not None:
-                        date = date['datetime']
-                    # print(date)
+            # if we don't have the date at this point, it's because we're processing a 
+            # classic episode. The date for those is in a different location. There is no
+            # time.
+            if (date == '') and (date := soup.find('time')) is not None:
+                date = date['datetime']
 
         except Exception as e:
             print_error('Failed to extract broadcast date. Ignoring.', e)
 
-        # print(date, time)
         return date, time
 
     def extract_favourite(self, soup):
