@@ -25,7 +25,6 @@ TEST_EPISODE_URL_8 = 'https://www.bbc.co.uk/programmes/m000198c'
 TEST_EPISODE_URL_9 = 'https://www.bbc.co.uk/programmes/b06d29bf'
 
 
-
 class TestEpisode(unittest.TestCase):
     def setUp(self):
         self.parser = DesertIslandDiscsParser()
@@ -54,7 +53,8 @@ class TestEpisode(unittest.TestCase):
         episode = self.process_episode_file(TEST_EPISODE_1)
         self.assertEqual(len(episode.tracks), MAX_TRACKS)
         self.assertEqual(episode.book, 'Fables by Aesop')
-        self.assertEqual(episode.favourite_track, 'The Long and Winding Road by The Beatles')
+        self.assertEqual(episode.favourite_track,
+                         'The Long and Winding Road by The Beatles')
         self.assertEqual(episode.luxury, 'Manicure set and nail varnish')
 
     def test_tracks_in_long_description(self):
@@ -62,9 +62,11 @@ class TestEpisode(unittest.TestCase):
         episode = self.process_episode_file(TEST_EPISODE_2)
         self.assertEqual(len(episode.tracks), MAX_TRACKS)
         self.assertEqual(episode.tracks[0].artist, 'Elvis Presley')
-        self.assertEqual(episode.tracks[0].song, 'I Just Can\'t Help Believin\'')
-        self.assertEqual(episode.tracks[MAX_TRACKS-1].artist, 'The Eagles')
-        self.assertEqual(episode.tracks[MAX_TRACKS-1].song, 'New Kid in Town')
+        self.assertEqual(episode.tracks[0].song,
+                         'I Just Can\'t Help Believin\'')
+        self.assertEqual(episode.tracks[MAX_TRACKS - 1].artist, 'The Eagles')
+        self.assertEqual(
+            episode.tracks[MAX_TRACKS - 1].song, 'New Kid in Town')
 
         self.assertEqual(episode.book, '')
         self.assertEqual(episode.favourite_track, '')
@@ -79,7 +81,8 @@ class TestEpisode(unittest.TestCase):
         """
         episode = self.process_episode_file(TEST_EPISODE_3)
 
-        self.assertEqual(episode.favourite_track, 'These Foolish Things by Billie Holiday')
+        self.assertEqual(episode.favourite_track,
+                         'These Foolish Things by Billie Holiday')
 
     def test_tracks_in_list_and_long_description(self):
         # self.skipTest('temporarily skipping')
@@ -87,11 +90,13 @@ class TestEpisode(unittest.TestCase):
         self.assertEqual(len(episode.tracks), MAX_TRACKS)
         self.assertEqual(episode.tracks[0].artist, 'The Waterboys')
         self.assertEqual(episode.tracks[0].song, 'The Whole of the Moon')
-        self.assertEqual(episode.tracks[MAX_TRACKS-1].artist, 'Toploader')
-        self.assertEqual(episode.tracks[MAX_TRACKS-1].song, 'Dancing In The Moonlight')
+        self.assertEqual(episode.tracks[MAX_TRACKS - 1].artist, 'Toploader')
+        self.assertEqual(
+            episode.tracks[MAX_TRACKS - 1].song, 'Dancing In The Moonlight')
 
         self.assertEqual(episode.book, 'War and Peace by Leo Tolstoy')
-        self.assertEqual(episode.favourite_track, 'These Foolish Things by Billie Holiday')
+        self.assertEqual(episode.favourite_track,
+                         'These Foolish Things by Billie Holiday')
         self.assertEqual(episode.luxury, 'Mask, snorkel and a neoprene vest')
 
     def test_multiple_artists_for_song(self):
@@ -103,11 +108,10 @@ class TestEpisode(unittest.TestCase):
         self.assertEqual(len(episode.tracks), MAX_TRACKS)
         self.assertEqual(episode.tracks[0].artist, 'Chic')
         self.assertEqual(episode.tracks[0].song, 'Le Freak')
-        self.assertEqual(episode.tracks[MAX_TRACKS-1].artist, 'Chic')
-        self.assertEqual(episode.tracks[MAX_TRACKS-1].song, 'Good Times')
+        self.assertEqual(episode.tracks[MAX_TRACKS - 1].artist, 'Chic')
+        self.assertEqual(episode.tracks[MAX_TRACKS - 1].song, 'Good Times')
 
         self.assertEqual(episode.favourite_track, 'The End by The Doors')
-
 
     def test_choices_after_track_list(self):
         episode = self.process_episode_file(TEST_EPISODE_7)
@@ -127,8 +131,8 @@ class TestEpisode(unittest.TestCase):
         self.assertEqual(len(episode.tracks), MAX_TRACKS)
         self.assertEqual(episode.tracks[0].artist, 'David Bowie')
         self.assertEqual(episode.tracks[0].song, 'Life On Mars?')
-        self.assertEqual(episode.tracks[MAX_TRACKS-1].artist, 'David Bowie')
-        self.assertEqual(episode.tracks[MAX_TRACKS-1].song, 'Word On A Wing')
+        self.assertEqual(episode.tracks[MAX_TRACKS - 1].artist, 'David Bowie')
+        self.assertEqual(episode.tracks[MAX_TRACKS - 1].song, 'Word On A Wing')
 
         self.assertEqual(episode.book, 'Hatter’s Castle by A. J. Cronin')
         self.assertEqual(episode.favourite_track, 'Galway Bay by Ruby Murray')
@@ -150,14 +154,17 @@ class TestEpisode(unittest.TestCase):
         """
 
         episode = self.process_episode_url(TEST_EPISODE_URL_3)
-        self.assertEqual(episode.tracks[6].artist, 'Mozart’s Clarinet Quintet in A Major')
-        self.assertEqual(episode.tracks[6].song, 'Mozart’s Clarinet Quintet in A Major')
+        self.assertEqual(episode.tracks[6].artist,
+                         'Mozart’s Clarinet Quintet in A Major')
+        self.assertEqual(episode.tracks[6].song,
+                         'Mozart’s Clarinet Quintet in A Major')
 
     def test_book_luxury_method_3(self):
         episode = self.process_episode_url(TEST_EPISODE_URL_5)
 
         self.assertEqual(len(episode.tracks), MAX_TRACKS)
-        self.assertEqual(episode.book, 'A blank book to record his Desert Island findings')
+        self.assertEqual(
+            episode.book, 'A blank book to record his Desert Island findings')
         self.assertEqual(episode.favourite_track, 'Maria by Blondie')
         self.assertEqual(episode.luxury, 'A huge pair of speakers')
 
@@ -169,7 +176,7 @@ class TestEpisode(unittest.TestCase):
 
         self.assertEqual(len(episode.tracks), MAX_TRACKS)
         self.assertEqual(episode.luxury, 'A really big drum kit\n' +
-            'A collection of Château d\'Yquem of his choice from 1900-2001, a fridge, Sauternes glasses')
+                         'A collection of Château d\'Yquem of his choice from 1900-2001, a fridge, Sauternes glasses')
 
     def test_favourite_track_denoted_by_favourite_track_in_description(self):
         """
@@ -178,7 +185,8 @@ class TestEpisode(unittest.TestCase):
         episode = self.process_episode_url(TEST_EPISODE_URL_8)
 
         self.assertEqual(len(episode.tracks), MAX_TRACKS)
-        self.assertEqual(episode.favourite_track, 'Beethoven\'s Symphony no. 5')
+        self.assertEqual(episode.favourite_track,
+                         'Beethoven\'s Symphony no. 5')
 
     def test_favourite_track_denoted_by_span_title(self):
         """
@@ -187,13 +195,14 @@ class TestEpisode(unittest.TestCase):
         """
         episode = self.process_episode_url(TEST_EPISODE_URL_7)
 
-        # Since the inline favourite track is using the wrong style, it's not picked 
-        # up when looking at the track listing. So we have one fewer track. 
-        # This is an instance of diminishing returns where we could add code for one 
-        # or two episodes. In this instance we've let it stand uncorrected since the 
+        # Since the inline favourite track is using the wrong style, it's not picked
+        # up when looking at the track listing. So we have one fewer track.
+        # This is an instance of diminishing returns where we could add code for one
+        # or two episodes. In this instance we've let it stand uncorrected since the
         # track appears in the favourite track.
-        self.assertEqual(len(episode.tracks), MAX_TRACKS-1)
-        self.assertEqual(episode.favourite_track, 'Extract from Poem in October by Dylan Thomas')
+        self.assertEqual(len(episode.tracks), MAX_TRACKS - 1)
+        self.assertEqual(episode.favourite_track,
+                         'Extract from Poem in October by Dylan Thomas')
 
     def test_book_as_h4(self):
         """
@@ -203,16 +212,27 @@ class TestEpisode(unittest.TestCase):
         episode = self.process_episode_url(TEST_EPISODE_URL_6)
 
         self.assertEqual(len(episode.tracks), MAX_TRACKS)
-        self.assertEqual(episode.book, 'Hogarth, A Life and a World by Jenny Uglow')
+        self.assertEqual(
+            episode.book, 'Hogarth, A Life and a World by Jenny Uglow')
+
+    def test_broadcast_date_oldest(self):
+        episode = self.process_episode_url(TEST_EPISODE_URL_2)
+        self.assertEqual(episode.broadcast_datetime[0], '2018-06-24')
+        self.assertEqual(episode.broadcast_datetime[1], '11:15')
+
+    def test_broadcast_date_classic(self):
+        episode = self.process_episode_file(TEST_EPISODE_2)
+        self.assertEqual(episode.broadcast_datetime[0], '2019-08-18')
 
     def test_clean_string(self):
 
-        s='  <p>Luxury: Ice machine or hot water bottle</p>  '
-        self.assertEqual(clean_string(s), 'Luxury: Ice machine or hot water bottle')
+        s = '  <p>Luxury: Ice machine or hot water bottle</p>  '
+        self.assertEqual(clean_string(
+            s), 'Luxury: Ice machine or hot water bottle')
 
         s2 = 'The Leopard (In Italian &amp; English) by Giuseppe di Lampedusa'
-        self.assertEqual(clean_string(s2), 'The Leopard (In Italian & English) by Giuseppe di Lampedusa')
-
+        self.assertEqual(clean_string(
+            s2), 'The Leopard (In Italian & English) by Giuseppe di Lampedusa')
 
 
 if __name__ == '__main__':
