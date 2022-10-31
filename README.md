@@ -1,4 +1,4 @@
-# webscraper readme
+# BBC Desert Island Discs history
 This program scrapes all episode data from the BBC Desert Island Discs website. For each episode, it attempts to get the name of the castaway, the music played, the book chosen, the luxury chosen and the favourite track chosen.
 
 At the time of posting (Feb 2020), over 3,000 episodes were extracted and are in the output directory.
@@ -9,7 +9,7 @@ For more information about how I wrote the program, see my blog post: [Desert Is
 
 ## Installation
 
-The program was tested with Python 3.8 on Windows 10. However, there is nothing intentionally specific to Windows in the program.
+The program was tested with Python 3.11 on Windows 10. However, there is nothing intentionally specific to Windows in the program.
 
 The following libraries need to be installed. If you're using `pip`, type:
 
@@ -19,6 +19,8 @@ pip install requests
 ```
 
 ## Running
+
+All scripts are in the `src` directory. To run the scripts, change directory to the `src` directory.
 
 The help is shown below:
 
@@ -55,6 +57,18 @@ There is also a script that will list out several episodes that have different c
 > python ./list_selective_episodes.py
 ```
 
+There is a script to list all the artists since they occur in eight different columns. The script brings them into one column as a text file. This can be imported into Excel. 
+```
+> python ./artists.py
+```
 ## Output
 
-The complete output of all episodes (at the time of running) are in the output directory. CSV and Excel output files are provided.
+The complete output of all episodes (at the time of running) are in the output directory. CSV and Excel output files are provided. The Excel file has more information: most chosen books, luxuries and artist.
+
+## Changes
+
+
+| Date          | Change |
+| ------------- | -------| 
+| 26 Oct 2022   | Add first broadcast date and time of each episode and regenerate output.| 
+| 31 Oct 2022   | Add episode presenter and regenerate output.|

@@ -11,8 +11,6 @@ be parts that are not "Pythonic". Please let me know what they are! Thanks
 """
 
 from bs4 import BeautifulSoup
-# from numpy import broadcast
-#  from bs4 import SoupStrainer
 import requests
 import re
 import sys
@@ -85,6 +83,10 @@ def smart_open(filename=None, filemode='w'):
     finally:
         if fh is not sys.stdout:
             fh.close()
+
+
+def isBlank(myString):
+    return not (myString and myString.strip())
 
 
 def contains(s, search_for_list, case_sensitive=re.IGNORECASE):
@@ -160,12 +162,13 @@ class DesertIslandDiscsEpisode:
     Represents data from a single episode ie the choices of a castaway.
     """
 
-    def __init__(self, title, tracks, book, luxury, favourite_track, broadcast_datetime):
+    def __init__(self, title, tracks, book, luxury, favourite_track, presenter, broadcast_datetime):
         self.title = title
         self.tracks = tracks
         self.book = book
         self.luxury = luxury
         self.favourite_track = favourite_track
+        self.presenter = presenter
         # this is a tuple: (date, time)
         self.broadcast_datetime = broadcast_datetime
 
@@ -180,8 +183,11 @@ class DesertIslandDiscsEpisode:
             s = s + '\nLuxury: ' + self.luxury
         if self.favourite_track:
             s = s + '\nFavourite track: ' + self.favourite_track
+        if self.presenter:
+            s = s + '\nPresenter: ' + self.presenter
         if self.broadcast_datetime:
-            s = s + '\nBroadcast date and time: ' + self.broadcast_datetime
+            s = s + \
+                f'\nBroadcast date and time: {self.broadcast_datetime[0]} {self.broadcast_datetime[1]}'
 
         return s
 
@@ -422,6 +428,36 @@ class DesertIslandDiscsParser:
 
         return result
 
+    def extract_presenter(self, s, castaway):
+        """
+        Used to find presenter of episode
+        """
+        def find(s, regex):
+            if m := re.findall(regex, s):
+                return f'{m[0][0]} {m[0][1]}'
+            return None
+
+        # For presenter A B (A=first name, B=second name), we are looking for a string like "Presenter: A B", 'A B's castaway is",
+        # "interviewed by A B", "A B talks to", "talks to A B", etc.
+        # To minimise chance of non-names, we look for two words that start with uppercase for the presenter.
+        # We compare with castaway because for something like "John Doe chats with Jane Doe", either may be the
+        # presenter or castaway
+        for r in [r'Presenter:?\s+([A-Z]\w+) ([A-Z]\w+)',
+                  r'([A-Z]\w+) ([A-Z]\w+)[\'’]s castaway',
+                  r'([A-Z]\w+) ([A-Z]\w+) casts away',
+                  r'[Ii]nterviewed by ([A-Z]\w+) ([A-Z]\w+)', r'([A-Z]\w+) ([A-Z]\w+) interviews',
+                  r'speaking to ([A-Z]\w+) ([A-Z]\w+)',
+                  r'([A-Z]\w+) ([A-Z]\w+) talks to ', r'talks to ([A-Z]\w+) ([A-Z]\w+)',
+                  r'castaway choices with ([A-Z]\w+) ([A-Z]\w+)',
+                  r'([A-Z]\w+) ([A-Z]\w+) chats to', r'(chats to [A-Z]\w+) ([A-Z]\w+)',
+                  r'[A-Z]\w+ [A-Z]\w+ joins ([A-Z]\w+) ([A-Z]\w+)']:
+            # print(s, r, castaway)
+            if name := find(s, r):
+                if name not in castaway:
+                    return name
+
+        return ''
+
     def extract_broadcast_datetime(self, soup):
         """
         Extract earliest broadcast date and time.
@@ -437,7 +473,7 @@ class DesertIslandDiscsParser:
                     dates.sort()
                     date = dates[0].strftime('%Y-%m-%d')
                     time = dates[0].strftime('%H:%M')
-            # if we don't have the date at this point, it's because we're processing a 
+            # if we don't have the date at this point, it's because we're processing a
             # classic episode. The date for those is in a different location. There is no
             # time.
             if (date == '') and (date := soup.find('time')) is not None:
@@ -485,14 +521,10 @@ class DesertIslandDiscsParser:
 
         return result
 
-    def search_and_extract(self, previous, s, search_for):
+    def search_and_extract(self, s, search_for):
         """
         Typically used to find luxury, book or favourite in long description
         """
-
-        # if already found don't look again
-        if previous:
-            return previous
 
         #  print(f'{search_for=}')
         if (i := contains(s, search_for)) > -1:
@@ -500,7 +532,7 @@ class DesertIslandDiscsParser:
         else:
             return ''
 
-    def extract_other_data(self, soup, tracks):
+    def extract_other_data(self, name, soup, tracks):
         """
         This method is very dependent on the structure of the HTML. Since the data isn't structured,
         we sometimes use the whole html string and sometimes we let Soup parse it. This has been
@@ -511,6 +543,7 @@ class DesertIslandDiscsParser:
         book = ''
         luxury = ''
         favourite_track = ''
+        presenter = ''
         broadcast_datetime = ''
         new_tracks = tracks
 
@@ -525,13 +558,17 @@ class DesertIslandDiscsParser:
                         ptext)
 
                 if not luxury:
-                    luxury = self.search_and_extract(
-                        luxury, pstr, LUXURY_INDICATOR)
+                    luxury = self.search_and_extract(pstr, LUXURY_INDICATOR)
+
                 if not favourite_track:
-                    favourite_track = self.search_and_extract(favourite_track, pstr,
-                                                              FAVOURITE_INDICATORS)
+                    favourite_track = self.search_and_extract(
+                        pstr, FAVOURITE_INDICATORS)
                 if not book:
-                    book = self.search_and_extract(book, pstr, BOOK_INDICATOR)
+                    book = self.search_and_extract(pstr, BOOK_INDICATOR)
+
+                if not presenter:
+                    presenter = self.extract_presenter(pstr, name)
+
         except Exception as e:
             print_error(
                 'Method 1 failed to extract tracks/book/luxury/favourite', e)
@@ -560,12 +597,13 @@ class DesertIslandDiscsParser:
             if not luxury:
                 luxury = self.extract_item_method_3(
                     soup, LUXURY_INDICATOR[DEFAULT_LUXURY_INDEX])
+
         except Exception as e:
             print_error('Method 3 failed to extract book/luxury', e)
 
-        return new_tracks, book, favourite_track, luxury, broadcast_datetime
+        return new_tracks, book, favourite_track, luxury, presenter, broadcast_datetime
 
-    def parse_episode(self, soup):
+    def parse_episode(self, soup, castaway=''):
         """
         Parse the page that contains the episode's details for the castaway, extracting
         the songs picked, favourite track, luxury and book
@@ -574,12 +612,15 @@ class DesertIslandDiscsParser:
 
         tracks = self.extract_tracks_from_list(soup)
 
+        if isBlank(castaway):
+            castaway = episode_title
+
         # Get other data, including track data (if we were unsuccessful using the
         # first method above).
-        tracks, book, favourite_track, luxury, broadcast_datetime = self.extract_other_data(
-            soup, tracks)
+        tracks, book, favourite_track, luxury, presenter, broadcast_datetime = self.extract_other_data(
+            castaway, soup, tracks)
 
-        return DesertIslandDiscsEpisode(episode_title, tracks, book, luxury, favourite_track, broadcast_datetime)
+        return DesertIslandDiscsEpisode(episode_title, tracks, book, luxury, favourite_track, presenter, broadcast_datetime)
 
     def parse_castaway_in_listing(self, castaway):
         """
@@ -592,7 +633,7 @@ class DesertIslandDiscsParser:
                 episode_url = castaway.a['href']
                 episode_element = BeautifulSoup(
                     GetPage(episode_url), SOUP_PARSER)
-                episode = self.parse_episode(episode_element)
+                episode = self.parse_episode(episode_element, name)
 
                 return DesertIslandDiscsCastaway(name, job, episode_url, episode)
             else:
@@ -655,6 +696,7 @@ class CastawayWriter:
         result.append(c.episode.book)
         result.append(c.episode.luxury)
         result.append(c.episode.favourite_track)
+        result.append(c.episode.presenter)
         result.append(c.episode.broadcast_datetime[0])
         result.append(c.episode.broadcast_datetime[1])
 
@@ -676,6 +718,7 @@ class CastawayWriter:
         result.append('Book')
         result.append('Luxury')
         result.append('Favourite track')
+        result.append('Presenter')
         result.append('Date first broadcast')
         result.append('Time first broadcast')
         for i in range(1, MAX_TRACKS + 1):
@@ -734,6 +777,34 @@ def main():
     writer.as_csv(parser.castaways, args.output)
 
 
+def process_episode_url(url):
+    print("================================================================================")
+    print(f'Processing {url}')
+    parser = DesertIslandDiscsParser()
+    return parser.parse_episode(BeautifulSoup(GetPage(url), SOUP_PARSER))
+
+
+def test():
+
+    # test presenter
+    # print(process_episode_url('https://www.bbc.co.uk/programmes/m000fx1k'))
+    # print(process_episode_url('https://www.bbc.co.uk/programmes/m001c678'))
+    # print(process_episode_url('https://www.bbc.co.uk/programmes/b07m4gls'))
+    # print(process_episode_url('https://www.bbc.co.uk/programmes/b09lxn6w'))
+    # print(process_episode_url('https://www.bbc.co.uk/programmes/b09smnhb'))
+    # print(process_episode_url('https://www.bbc.co.uk/programmes/b03mckqs'))
+    # print(process_episode_url('https://www.bbc.co.uk/programmes/b00yhv30'))
+    # print(process_episode_url('https://www.bbc.co.uk/programmes/p0c133xq'))
+    # print(process_episode_url('https://www.bbc.co.uk/programmes/p07kjcks'))
+    # print(process_episode_url('https://www.bbc.co.uk/programmes/p0cspg4q'))
+    # print(process_episode_url('https://www.bbc.co.uk/programmes/b03z3l2g'))
+    # print(process_episode_url('https://www.bbc.co.uk/programmes/b03f87bb'))
+
+    # extra columns after last artist
+    print(process_episode_url('https://www.bbc.co.uk/programmes/m0011403'))
+
+
 #  https://stackoverflow.com/questions/419163/what-does-if-name-main-do
 if __name__ == '__main__':
     main()
+    # test()

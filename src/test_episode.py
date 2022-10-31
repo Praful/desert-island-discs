@@ -23,15 +23,15 @@ TEST_EPISODE_URL_6 = 'https://www.bbc.co.uk/programmes/b0b4zdn9'
 TEST_EPISODE_URL_7 = 'https://www.bbc.co.uk/programmes/b09h0bkl'
 TEST_EPISODE_URL_8 = 'https://www.bbc.co.uk/programmes/m000198c'
 TEST_EPISODE_URL_9 = 'https://www.bbc.co.uk/programmes/b06d29bf'
-
-
+TEST_EPISODE_URL_10 = 'https://www.bbc.co.uk/programmes/b08bz0rz' #David Beckham
+TEST_EPISODE_URL_11 = 'https://www.bbc.co.uk/programmes/m001c678'
+TEST_EPISODE_URL_12 = 'https://www.bbc.co.uk/programmes/m000fx1k'
 class TestEpisode(unittest.TestCase):
     def setUp(self):
         self.parser = DesertIslandDiscsParser()
 
     def process_episode(self, soup):
         episode = self.parser.parse_episode(soup)
-        #  print(episode)
         return episode
 
     def process_episode_file(self, filename):
@@ -224,8 +224,55 @@ class TestEpisode(unittest.TestCase):
         episode = self.process_episode_file(TEST_EPISODE_2)
         self.assertEqual(episode.broadcast_datetime[0], '2019-08-18')
 
-    def test_clean_string(self):
+    def test_presenter_castaway(self):
+        """
+        Somewhere in body text:
+            Kirsty Young's castaway
+        """
+        episode = self.process_episode_file(TEST_EPISODE_4)
+        self.assertEqual(episode.presenter, 'Roy Plomley')
 
+    def test_presenter_speaking_to(self):
+        """
+        Somewhere in body text:
+            Jane Doe speaking to Kirsty Young
+        """
+        episode = self.process_episode_file(TEST_EPISODE_2)
+        self.assertEqual(episode.presenter, 'Kirsty Young')
+
+    def test_presenter_listing(self):
+        """
+        Below tracks:
+            Presenter: Kirsty Young
+        """
+        episode = self.process_episode_url(TEST_EPISODE_URL_2)
+        self.assertEqual(episode.presenter, 'Kirsty Young')
+
+    def test_presenter_listing2(self):
+        """
+        Below tracks:
+            Presenter Kirsty Young
+        """
+        episode = self.process_episode_url(TEST_EPISODE_URL_11)
+        self.assertEqual(episode.presenter, 'Lauren Laverne')
+
+    def test_presenter_listing3(self):
+        """
+        Below tracks:
+            Presenter: Kirsty Young
+        """
+        episode = self.process_episode_url(TEST_EPISODE_URL_12)
+        self.assertEqual(episode.presenter, 'Lauren Laverne')
+
+    def test_presenter_talks_to(self):
+        """
+        Below tracks:
+            Kirsty Young talks to
+        """
+        episode = self.process_episode_url(TEST_EPISODE_URL_10)
+        self.assertEqual(episode.presenter, 'Kirsty Young')
+
+    def test_clean_string(self):
         s = '  <p>Luxury: Ice machine or hot water bottle</p>  '
         self.assertEqual(clean_string(
             s), 'Luxury: Ice machine or hot water bottle')

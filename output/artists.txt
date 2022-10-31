@@ -1,3 +1,11 @@
+Michael Flanders and Donald Swann
+George Frideric Handel
+Johann Sebastian Bach
+Dr. Hook
+George Frideric Handel
+Joseph Haydn
+Henry Purcell
+Joyce DiDonato
 The Beatles
 Johann Sebastian Bach
 Ramones
@@ -25605,4 +25613,4 @@ Ane Brun
 Ingebjørg Bratland
 The Special A.K.A
 Ingrid Olava
-Total rows: 25607
+Total rows: 25615
