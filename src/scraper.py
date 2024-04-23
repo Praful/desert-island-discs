@@ -2,7 +2,7 @@
 =============================================================================
 File: scraper.py
 Description: Get choices of guests on BBC Radio 4's Desert Island Discs show.
-Author: Praful https://github.com/Praful/webscraper
+Author: Praful https://github.com/Praful/desert-island-discs
 Licence: GPL v3
 
 Notes: This is my first Python program. I wrote it to learn Python. There will
