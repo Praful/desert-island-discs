@@ -6,6 +6,10 @@ Description: Create single list of artists from already created output. Used
              in Excel output spreadsheet to find most occurring artists.
 Author: Praful https://github.com/Praful/desert-island-discs
 Licence: GPL v3
+
+To run:
+
+    python artists.py <desert_island_discs.csv>
 =============================================================================
 """
 

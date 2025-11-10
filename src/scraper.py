@@ -753,6 +753,9 @@ def setup_command_line():
                          help=f'Last page to scrape episodes from (default is {DEFAULT_LISTING_START_PAGE})')
     cmdline.add_argument('--sleep', type=int, default=DEFAULT_SLEEP,
                          help=f'Time to pause (in seconds) between fetching pages (default is {DEFAULT_SLEEP} seconds)')
+    cmdline.add_argument('--url', dest='url',
+                         help='URL of episode to process (e.g. https://www.bbc.co.uk/programmes/m000fx1k). '
+                         'If this is provided, all other arguments are ignored. Used for testing.')
 
     return cmdline
 
@@ -762,6 +765,10 @@ def main():
     Processing begins here if script run directly
     """
     args = setup_command_line().parse_args()
+
+    if args.url:
+        print(process_episode_url(args.url))
+        sys.exit(0)
 
     parser = DesertIslandDiscsParser()
 
@@ -801,7 +808,8 @@ def test():
     # print(process_episode_url('https://www.bbc.co.uk/programmes/b03f87bb'))
 
     # extra columns after last artist
-    print(process_episode_url('https://www.bbc.co.uk/programmes/m0011403'))
+    #  print(process_episode_url('https://www.bbc.co.uk/programmes/m0011403'))
+    pass
 
 
 #  https://stackoverflow.com/questions/419163/what-does-if-name-main-do
