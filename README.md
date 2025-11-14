@@ -25,19 +25,25 @@ The help is shown below:
 
 ```
 > python .\scraper.py --help
-usage: Desert Island Discs Web Scraper [-h] [--csv OUTPUT] [--start-page START_PAGE] [--end-page END_PAGE] [--sleep SLEEP]
+usage: Desert Island Discs Web Scraper [-h] [--csv OUTPUT]
+                                       [--start-page START_PAGE]
+                                       [--end-page END_PAGE] [--sleep SLEEP]
+                                       [--url URL]
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
-  --csv OUTPUT          Filename of CSV file (tab-separated). The file will be appended to if it exists (default output is to console)
+  --csv OUTPUT          Filename of CSV file (tab-separated). The file will be
+                        appended to if it exists (default output is to
+                        console)
   --start-page START_PAGE
                         First page to scrape episodes from (default is 1)
   --end-page END_PAGE   Last page to scrape episodes from (default is 1)
-  --sleep SLEEP         Time to pause (in seconds) between fetching pages (default is 3 seconds)
-```
-
-For example to scrape the first ten pages from the BBC website and store them in a file called `myoutput.csv`, type the following at the command prompt (shell):
-
+  --sleep SLEEP         Time to pause (in seconds) between fetching pages
+                        (default is 3 seconds)
+  --url URL             URL of episode to process (e.g.
+                        https://www.bbc.co.uk/programmes/m000fx1k). If this is
+                        provided, all other arguments are ignored. Used for
+                        testing.
 ```
 > python ./scraper.py --end-page 10 --csv myoutput.csv
 ```
